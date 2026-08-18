@@ -1,2 +1,47 @@
-# Eyes-Project-AI
-Pipeline de visão computacional do Eyes Project para avaliação, adaptação e exportação de modelos de detecção de objetos para dispositivos móveis.
+# Eyes Project AI
+
+Pipeline de visão computacional do Eyes Project para avaliação, adaptação e
+exportação de modelos de detecção de objetos para dispositivos móveis.
+
+## Toolchain fixado
+
+- Python `3.11`, declarado em `.python-version` e `pyproject.toml`;
+- uv `0.12.5` para ambiente virtual e resolução de dependências;
+- dependências exatas registradas em `uv.lock`.
+
+O treinamento e a exportação de modelos serão adicionados em cards próprios.
+Esta fundação evita antecipar bibliotecas pesadas antes da definição do
+experimento e do dataset.
+
+## Configuração no Windows
+
+```powershell
+py -3.11 -m pip install --user uv==0.12.5
+py -3.11 -m uv sync --locked --all-groups
+./scripts/check-toolchain.ps1
+```
+
+O uv cria o ambiente `.venv` automaticamente. Não instale dependências do
+projeto globalmente e não edite `uv.lock` à mão.
+
+## Qualidade
+
+```powershell
+py -3.11 -m uv run ruff check .
+py -3.11 -m uv run pytest
+```
+
+Dependências novas devem ser incluídas com `uv add` ou `uv add --dev`, seguidas
+de revisão do `pyproject.toml` e do `uv.lock` no mesmo Pull Request.
+
+## Privacidade
+
+Datasets, imagens, modelos e resultados locais ficam fora do Git por padrão.
+Somente artefatos aprovados, com origem e licença documentadas, poderão ser
+versionados nos cards de IA correspondentes.
+
+## Fluxo Git
+
+As funcionalidades partem de `dev`, usam `feat/<linear-id>-<nome-curto>` e
+retornam por Pull Request. A promoção para produção ocorre de `dev` para
+`main`, que permanece protegida.
