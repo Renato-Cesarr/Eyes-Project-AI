@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "protocol_id": "eyes-mvp-object-detection-v1",
-  "status": "proposed",
+  "status": "approved",
   "language": "pt-BR",
   "last_reviewed_at": "2026-08-19",
   "research_question": "Um detector leve, pré-treinado e executado localmente consegue produzir alertas preliminares úteis para objetos frequentes de sala de aula em um aparelho Android de referência?",
@@ -111,17 +111,30 @@
     }
   },
   "reference_device": {
-    "selection_status": "physical_device_required_before_benchmark",
-    "manufacturer": null,
-    "model": null,
-    "android_version": null,
-    "ram_gb": null,
+    "selection_status": "selected",
+    "manufacturer": "Xiaomi",
+    "brand": "POCO",
+    "model": "POCO X5 Pro 5G",
+    "chipset": "Qualcomm Snapdragon 778G",
+    "supported_ram_variants_gb": [6, 8],
+    "official_specs_url": "https://www.mi.com/br/product/poco-x5-pro-5g/",
     "cpu_abi": "arm64-v8a",
     "camera": "rear",
     "camera_resolution": "medium",
     "camera_target_fps": 12,
     "inference_threads_initial_candidate": 4,
-    "notes": "Emulador serve apenas para testes funcionais; métricas de desempenho exigem aparelho físico identificado."
+    "runtime_inventory": {
+      "status": "capture_before_benchmark",
+      "android_version": null,
+      "ram_gb": null,
+      "build_fingerprint_sha256": null,
+      "app_version": null,
+      "git_commit": null,
+      "battery_percent_start": null,
+      "thermal_state_start": null,
+      "captured_at": null
+    },
+    "notes": "O modelo do aparelho está selecionado. Android instalado, RAM da unidade, build, bateria e estado térmico devem ser capturados no aparelho físico antes do benchmark; emulador serve apenas para testes funcionais."
   },
   "metrics": [
     {
@@ -214,15 +227,19 @@
     "derived_annotations_retention": "Somente após revisão de licença, consentimento e ausência de identificadores diretos.",
     "future_minors_gate": "Exige avaliação ética/institucional, melhor interesse, base legal documentada e consentimento do responsável quando aplicável."
   },
-  "approval": {
-    "team_approved": false,
-    "approved_by": null,
-    "approved_at": null,
-    "open_items": [
-      "Registrar fabricante, modelo, Android e RAM do aparelho físico de referência.",
+  "execution_readiness": {
+    "status": "blocked",
+    "blocking_items": [
       "Registrar SHA-256 e concluir revisão de licença do artefato em REN-36.",
-      "Obter aprovação explícita da equipe sobre classes, gates e política de dados."
+      "Capturar Android, RAM, hash do build fingerprint, versão do app, commit, bateria e estado térmico do aparelho físico antes do benchmark."
     ]
+  },
+  "approval": {
+    "team_approved": true,
+    "approved_by": "Renato Cesar",
+    "approved_at": "2026-08-19",
+    "evidence": "A equipe definiu o POCO X5 Pro 5G como aparelho de referência e autorizou a continuidade do desenvolvimento.",
+    "open_items": []
   },
   "sources": [
     {
@@ -238,6 +255,11 @@
     {
       "title": "Lei Geral de Proteção de Dados Pessoais, Lei 13.709/2018",
       "url": "https://www.gov.br/mme/pt-br/arquivos/legislacao-consolidada-lgpd.pdf",
+      "accessed_at": "2026-08-19"
+    },
+    {
+      "title": "POCO X5 Pro 5G — página oficial do produto",
+      "url": "https://www.mi.com/br/product/poco-x5-pro-5g/",
       "accessed_at": "2026-08-19"
     }
   ]

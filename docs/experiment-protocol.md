@@ -2,7 +2,7 @@
 
 - **ID:** `eyes-mvp-object-detection-v1`
 - **Versão do esquema:** 1
-- **Status:** proposto — aguarda aparelho físico, manifesto do modelo e aprovação da equipe
+- **Status:** aprovado — execução bloqueada até o manifesto do modelo e o inventário de runtime
 - **Linear:** REN-33
 - **Última revisão:** 19 de agosto de 2026
 - **Configuração normativa:** [`config/experiment.v1.json`](../config/experiment.v1.json)
@@ -149,14 +149,17 @@ execuções de aquecimento e usa ao menos 300 amostras válidas por configuraç�
 
 ## 7. Aparelho de referência
 
-O repositório não possui aparelho físico conectado ou registrado. Portanto,
-marca e modelo não são inventados. Antes do benchmark, a equipe deve preencher
-no JSON:
+A equipe selecionou o **Xiaomi POCO X5 Pro 5G** como aparelho físico de
+referência. A especificação oficial registra chipset Qualcomm Snapdragon 778G e
+variantes de 6 GB ou 8 GB de RAM. Esses valores descrevem a linha do produto;
+não substituem o inventário da unidade usada no ensaio.
 
-- fabricante e modelo;
-- versão do Android;
-- RAM;
-- ABI (esperada: `arm64-v8a`);
+Imediatamente antes do benchmark, a equipe deve capturar no JSON, via aparelho
+ou ADB:
+
+- versão do Android efetivamente instalada;
+- RAM da unidade física;
+- hash SHA-256 do build fingerprint, sem publicar o identificador bruto;
 - versão do aplicativo e commit;
 - estado térmico e nível inicial de bateria.
 
@@ -175,17 +178,22 @@ são aceitos como desempenho do MVP.
 5. **Precision/recall falharam de forma ampla:** comparar modelo alternativo e
    registrar a decisão, sem escolher pelo conjunto de teste.
 
-## 9. Aprovação
+## 9. Aprovação e prontidão de execução
 
-O protocolo passa de `proposed` para `approved` somente quando:
+Em 19 de agosto de 2026, Renato Cesar aprovou classes, gates, política de dados
+e o POCO X5 Pro 5G como aparelho de referência. O protocolo está `approved` e
+`python -m eyes_project_ai.protocol` deve continuar passando.
 
-- o aparelho físico estiver identificado;
-- o artefato tiver SHA-256 e licença aprovada;
-- a equipe aprovar classes, gates e política de dados;
-- `approval.team_approved`, `approved_by` e `approved_at` forem preenchidos;
-- `python -m eyes_project_ai.protocol` continuar passando.
+A aprovação congela as decisões experimentais, mas não autoriza antecipar um
+benchmark. A execução permanece `blocked` até que a REN-36:
 
-Até lá, os itens são decisões propostas e auditáveis, não lacunas escondidas.
+- registre o SHA-256 e aprove a licença do artefato exato;
+- capture Android, RAM, hash do build fingerprint, versão do app, commit,
+  bateria e estado térmico da unidade física;
+- remova os bloqueios de `execution_readiness` e altere seu status para `ready`.
+
+Essa separação evita dependência circular: REN-33 aprova o protocolo que a
+REN-36 usará para adquirir e verificar o artefato executável.
 
 ## 10. Fontes primárias
 
@@ -194,3 +202,4 @@ Até lá, os itens são decisões propostas e auditáveis, não lacunas escondid
 - [Mapa de classes COCO](https://docs.ultralytics.com/datasets/detect/coco/)
 - [Licenciamento Ultralytics](https://www.ultralytics.com/license)
 - [LGPD consolidada — Lei 13.709/2018](https://www.gov.br/mme/pt-br/arquivos/legislacao-consolidada-lgpd.pdf)
+- [POCO X5 Pro 5G — página oficial do produto](https://www.mi.com/br/product/poco-x5-pro-5g/)

@@ -1,6 +1,6 @@
 # ADR 0001: baseline pré-treinado EfficientDet-Lite0
 
-- **Status:** proposto
+- **Status:** aceito
 - **Data:** 2026-08-19
 - **Linear:** REN-33
 
@@ -29,6 +29,8 @@ como TensorFlow Lite com o menor número possível de conversões.
 6. Exigir URL, SHA-256, metadados e revisão de licença antes de distribuir o
    artefato no app.
 7. Manter YOLO como comparador opcional, condicionado a ADR de licença próprio.
+8. Usar o Xiaomi POCO X5 Pro 5G como aparelho físico de referência; registrar a
+   configuração real da unidade imediatamente antes de cada benchmark.
 
 ## Consequências
 
@@ -45,7 +47,8 @@ como TensorFlow Lite com o menor número possível de conversões.
 - porta não estará disponível na primeira demonstração;
 - carteiras escolares podem sofrer domain shift em relação a `dining table`;
 - o modelo pode ter menor precisão que alternativas mais recentes;
-- ainda será necessário escolher e registrar um aparelho físico.
+- resultados podem variar entre as versões de 6 GB e 8 GB e conforme o Android
+  instalado; o inventário de runtime é obrigatório para cada benchmark.
 
 ## Alternativas consideradas
 

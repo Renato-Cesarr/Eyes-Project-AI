@@ -5,7 +5,7 @@ exportação de modelos de detecção de objetos para dispositivos móveis.
 
 ## Protocolo do MVP
 
-O escopo científico inicial está proposto e versionado para aprovação em:
+O escopo científico inicial está aprovado e versionado em:
 
 - [protocolo experimental](docs/experiment-protocol.md);
 - [guia de anotação](docs/annotation-guide.md);
@@ -23,9 +23,11 @@ Valide o protocolo antes de qualquer experimento:
 py -3.11 -m uv run python -m eyes_project_ai.protocol
 ```
 
-O status permanece `proposed` até registrar o aparelho físico, o SHA-256 e a
-licença do artefato e a aprovação explícita da equipe. Métricas observadas nunca
-devem ser gravadas como se fossem configuração pré-experimental.
+O protocolo usa o POCO X5 Pro 5G como aparelho físico de referência. Sua
+execução permanece `blocked` até a REN-36 verificar SHA-256 e licença do
+artefato e capturar o inventário real da unidade (Android, RAM, build, versão do
+app, commit, bateria e estado térmico). Métricas observadas nunca devem ser
+gravadas como se fossem configuração pré-experimental.
 
 ## Toolchain fixado
 

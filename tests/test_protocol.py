@@ -21,7 +21,9 @@ def protocol() -> dict:
 
 def test_versioned_protocol_is_valid(protocol: dict) -> None:
     assert protocol["protocol_id"] == "eyes-mvp-object-detection-v1"
-    assert protocol["status"] == "proposed"
+    assert protocol["status"] == "approved"
+    assert protocol["reference_device"]["model"] == "POCO X5 Pro 5G"
+    assert protocol["execution_readiness"]["status"] == "blocked"
 
 
 def test_baseline_enables_only_supported_coco_classes(protocol: dict) -> None:
@@ -71,9 +73,55 @@ def test_initial_protocol_rejects_image_persistence(protocol: dict) -> None:
         validate_protocol(invalid)
 
 
-def test_approval_requires_artifact_device_and_team(protocol: dict) -> None:
+def test_approval_requires_selected_device(protocol: dict) -> None:
     invalid = deepcopy(protocol)
-    invalid["status"] = "approved"
+    invalid["reference_device"]["selection_status"] = "pending"
+
+    with pytest.raises(ProtocolValidationError, match="must be 'selected'"):
+        validate_protocol(invalid)
+
+
+def test_approval_requires_team_approval(protocol: dict) -> None:
+    invalid = deepcopy(protocol)
+    invalid["approval"]["team_approved"] = False
+
+    with pytest.raises(ProtocolValidationError, match="must be true"):
+        validate_protocol(invalid)
+
+
+def test_blocked_execution_requires_blocking_items(protocol: dict) -> None:
+    invalid = deepcopy(protocol)
+    invalid["execution_readiness"]["blocking_items"] = []
+
+    with pytest.raises(ProtocolValidationError, match="at least one blocking item"):
+        validate_protocol(invalid)
+
+
+def test_ready_execution_requires_verified_artifact(protocol: dict) -> None:
+    invalid = deepcopy(protocol)
+    invalid["execution_readiness"] = {"status": "ready", "blocking_items": []}
 
     with pytest.raises(ProtocolValidationError, match="SHA-256"):
         validate_protocol(invalid)
+
+
+def test_ready_execution_accepts_verified_artifact_and_runtime_inventory(
+    protocol: dict,
+) -> None:
+    ready = deepcopy(protocol)
+    ready["execution_readiness"] = {"status": "ready", "blocking_items": []}
+    ready["baseline"]["artifact"]["sha256"] = "a" * 64
+    ready["baseline"]["artifact"]["license_review_status"] = "approved"
+    ready["reference_device"]["runtime_inventory"] = {
+        "status": "captured",
+        "android_version": "captured-on-device",
+        "ram_gb": 8,
+        "build_fingerprint_sha256": "b" * 64,
+        "app_version": "1.0.0-dev+1",
+        "git_commit": "c" * 40,
+        "battery_percent_start": 90,
+        "thermal_state_start": "nominal",
+        "captured_at": "2026-08-19T10:00:00-03:00",
+    }
+
+    validate_protocol(ready)

@@ -28,6 +28,7 @@ REQUIRED_METRIC_IDS = {
     "missed_alert_rate",
 }
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+GIT_COMMIT_PATTERN = re.compile(r"^[0-9a-f]{7,40}$")
 
 
 class ProtocolValidationError(ValueError):
@@ -171,7 +172,7 @@ def _validate_privacy(protocol: Mapping[str, Any]) -> None:
         _fail("$.privacy.delete_raw_data_after_days", "initial retention must be 30 days")
 
 
-def _validate_approval_gates(protocol: Mapping[str, Any]) -> None:
+def _validate_status_and_execution_gates(protocol: Mapping[str, Any]) -> None:
     status = protocol.get("status")
     if status not in {"proposed", "approved"}:
         _fail("$.status", "must be 'proposed' or 'approved'")
@@ -179,27 +180,105 @@ def _validate_approval_gates(protocol: Mapping[str, Any]) -> None:
     baseline = _mapping(_required(protocol, "baseline", "$"), "$.baseline")
     artifact = _mapping(_required(baseline, "artifact", "$.baseline"), "$.baseline.artifact")
     device = _mapping(_required(protocol, "reference_device", "$"), "$.reference_device")
+    runtime = _mapping(
+        _required(device, "runtime_inventory", "$.reference_device"),
+        "$.reference_device.runtime_inventory",
+    )
+    readiness = _mapping(_required(protocol, "execution_readiness", "$"), "$.execution_readiness")
     approval = _mapping(_required(protocol, "approval", "$"), "$.approval")
 
     if status == "approved":
-        digest = artifact.get("sha256")
-        if not isinstance(digest, str) or not SHA256_PATTERN.fullmatch(digest):
-            _fail(
-                "$.baseline.artifact.sha256",
-                "approved protocols require a lowercase SHA-256 digest",
-            )
-        if artifact.get("license_review_status") != "approved":
-            _fail(
-                "$.baseline.artifact.license_review_status",
-                "must be approved before protocol approval",
-            )
-        for field in ("manufacturer", "model", "android_version", "ram_gb"):
-            if device.get(field) in {None, ""}:
-                _fail(f"$.reference_device.{field}", "must identify the physical reference device")
+        if device.get("selection_status") != "selected":
+            _fail("$.reference_device.selection_status", "must be 'selected'")
+        for field in ("manufacturer", "model"):
+            _non_empty_string(device.get(field), f"$.reference_device.{field}")
         if approval.get("team_approved") is not True:
             _fail("$.approval.team_approved", "must be true")
         _non_empty_string(approval.get("approved_by"), "$.approval.approved_by")
         _non_empty_string(approval.get("approved_at"), "$.approval.approved_at")
+
+    readiness_status = readiness.get("status")
+    if readiness_status not in {"blocked", "ready"}:
+        _fail("$.execution_readiness.status", "must be 'blocked' or 'ready'")
+    blocking_items = _sequence(
+        _required(readiness, "blocking_items", "$.execution_readiness"),
+        "$.execution_readiness.blocking_items",
+    )
+
+    if readiness_status == "blocked":
+        if not blocking_items:
+            _fail(
+                "$.execution_readiness.blocking_items",
+                "blocked execution requires at least one blocking item",
+            )
+        return
+
+    if blocking_items:
+        _fail(
+            "$.execution_readiness.blocking_items",
+            "ready execution cannot have blocking items",
+        )
+
+    if readiness_status == "ready":
+        digest = artifact.get("sha256")
+        if not isinstance(digest, str) or not SHA256_PATTERN.fullmatch(digest):
+            _fail(
+                "$.baseline.artifact.sha256",
+                "ready execution requires a lowercase SHA-256 digest",
+            )
+        if artifact.get("license_review_status") != "approved":
+            _fail(
+                "$.baseline.artifact.license_review_status",
+                "must be approved before experiment execution",
+            )
+        if runtime.get("status") != "captured":
+            _fail("$.reference_device.runtime_inventory.status", "must be 'captured'")
+        _non_empty_string(
+            runtime.get("android_version"),
+            "$.reference_device.runtime_inventory.android_version",
+        )
+        ram_gb = runtime.get("ram_gb")
+        if not isinstance(ram_gb, int | float) or isinstance(ram_gb, bool) or ram_gb <= 0:
+            _fail(
+                "$.reference_device.runtime_inventory.ram_gb",
+                "must be a positive number",
+            )
+        fingerprint_digest = runtime.get("build_fingerprint_sha256")
+        if not isinstance(fingerprint_digest, str) or not SHA256_PATTERN.fullmatch(
+            fingerprint_digest
+        ):
+            _fail(
+                "$.reference_device.runtime_inventory.build_fingerprint_sha256",
+                "must be a lowercase SHA-256 digest",
+            )
+        _non_empty_string(
+            runtime.get("app_version"),
+            "$.reference_device.runtime_inventory.app_version",
+        )
+        git_commit = runtime.get("git_commit")
+        if not isinstance(git_commit, str) or not GIT_COMMIT_PATTERN.fullmatch(git_commit):
+            _fail(
+                "$.reference_device.runtime_inventory.git_commit",
+                "must be a 7 to 40 character lowercase Git commit hash",
+            )
+        battery_percent = runtime.get("battery_percent_start")
+        if (
+            not isinstance(battery_percent, int | float)
+            or isinstance(battery_percent, bool)
+            or not 0 <= battery_percent <= 100
+        ):
+            _fail(
+                "$.reference_device.runtime_inventory.battery_percent_start",
+                "must be a number between 0 and 100",
+            )
+        _non_empty_string(
+            runtime.get("thermal_state_start"),
+            "$.reference_device.runtime_inventory.thermal_state_start",
+        )
+        _non_empty_string(
+            runtime.get("captured_at"),
+            "$.reference_device.runtime_inventory.captured_at",
+        )
 
 
 def validate_protocol(protocol: Mapping[str, Any]) -> None:
@@ -212,7 +291,7 @@ def validate_protocol(protocol: Mapping[str, Any]) -> None:
     _validate_split(protocol)
     _validate_metrics(protocol)
     _validate_privacy(protocol)
-    _validate_approval_gates(protocol)
+    _validate_status_and_execution_gates(protocol)
 
 
 def load_and_validate_protocol(path: str | Path) -> dict[str, Any]:
