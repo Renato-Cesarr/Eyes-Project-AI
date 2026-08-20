@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "Pipeline reproduzível de visão computacional do Eyes Project"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
-dependencies = []
+dependencies = [
+    "ai-edge-litert==2.2.0",
+    "numpy>=2.0,<3",
+    "pillow>=11,<13",
+]
 
 [dependency-groups]
 dev = [

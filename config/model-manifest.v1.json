@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "model_id": "efficientdet-lite0-coco2017-int8",
+  "model_version": "tensorflow-metadata-1",
+  "framework": "TensorFlow Lite",
+  "artifact": {
+    "filename": "efficientdet-lite0.tflite",
+    "download_url": "https://storage.googleapis.com/download.tensorflow.org/models/tflite/task_library/object_detection/rpi/lite-model_efficientdet_lite0_detection_metadata_1.tflite",
+    "sha256": "2e04c53bfeac0ac2a30c057c7e2a777594ce39baaac35a92f74fb1e8c4fc4e0b",
+    "size_bytes": 4563519,
+    "acquired_at": "2026-08-20",
+    "publisher": "TensorFlow",
+    "model_card_url": "https://www.kaggle.com/models/tensorflow/efficientdet/tfLite/lite0-detection-default",
+    "provenance_url": "https://github.com/tensorflow/examples/blob/master/lite/examples/object_detection/raspberry_pi/setup.sh",
+    "license": {
+      "spdx_id": "Apache-2.0",
+      "review_status": "approved",
+      "source_url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "runtime": {
+    "python_package": "ai-edge-litert",
+    "python_package_version": "2.2.0",
+    "input": {
+      "name": "serving_default_images:0",
+      "shape": [1, 320, 320, 3],
+      "dtype": "uint8",
+      "color_space": "RGB",
+      "resize_method": "bilinear",
+      "value_range": [0, 255]
+    },
+    "outputs": {
+      "boxes": {
+        "name": "StatefulPartitionedCall:3",
+        "shape": [1, 25, 4],
+        "dtype": "float32",
+        "coordinates": "ymin_xmin_ymax_xmax_normalized"
+      },
+      "classes": {
+        "name": "StatefulPartitionedCall:2",
+        "shape": [1, 25],
+        "dtype": "float32"
+      },
+      "scores": {
+        "name": "StatefulPartitionedCall:1",
+        "shape": [1, 25],
+        "dtype": "float32"
+      },
+      "count": {
+        "name": "StatefulPartitionedCall:0",
+        "shape": [1],
+        "dtype": "float32"
+      }
+    },
+    "postprocessing": {
+      "embedded_in_model": true,
+      "maximum_detections": 25,
+      "additional_nms_required": false
+    }
+  },
+  "labels": {
+    "associated_file": "labelmap.txt",
+    "count": 90,
+    "sha256": "f8803ef7900160c629d570848dfda4175e21667bf7b71f73f8ece4938c9f2bf2"
+  },
+  "enabled_classes": [
+    {
+      "domain_id": "person",
+      "display_name_pt_br": "pessoa",
+      "source_label": "person",
+      "model_label_index": 0,
+      "coco_category_id": 1
+    },
+    {
+      "domain_id": "chair",
+      "display_name_pt_br": "cadeira",
+      "source_label": "chair",
+      "model_label_index": 61,
+      "coco_category_id": 62
+    },
+    {
+      "domain_id": "table_desk",
+      "display_name_pt_br": "mesa",
+      "source_label": "dining table",
+      "model_label_index": 66,
+      "coco_category_id": 67
+    },
+    {
+      "domain_id": "backpack",
+      "display_name_pt_br": "mochila",
+      "source_label": "backpack",
+      "model_label_index": 26,
+      "coco_category_id": 27
+    }
+  ]
+}

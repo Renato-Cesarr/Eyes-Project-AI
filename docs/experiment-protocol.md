@@ -2,7 +2,7 @@
 
 - **ID:** `eyes-mvp-object-detection-v1`
 - **Versão do esquema:** 1
-- **Status:** aprovado — execução bloqueada até o manifesto do modelo e o inventário de runtime
+- **Status:** aprovado — artefato validado; benchmark bloqueado até o inventário de runtime
 - **Linear:** REN-33
 - **Última revisão:** 19 de agosto de 2026
 - **Configuração normativa:** [`config/experiment.v1.json`](../config/experiment.v1.json)
@@ -27,13 +27,17 @@ primeiro incremento a aquisição, verificação e integração de um artefato j
 treinado; nenhuma coleta ou sessão de treinamento é necessária para colocar a
 primeira inferência no aparelho.
 
-O artefato só poderá ser incorporado ao aplicativo depois que o REN-36 registrar:
+O REN-36 concluiu os requisitos para incorporação controlada do artefato:
 
-1. URL exata e data da aquisição;
-2. SHA-256 do arquivo;
-3. licença e obrigações de redistribuição verificadas;
-4. assinatura dos tensores, metadados e labels;
-5. paridade entre o script de referência e o runtime mobile.
+1. URL exata e data da aquisição registradas;
+2. SHA-256 e tamanho do arquivo fixados;
+3. licença Apache-2.0 e obrigação de atribuição documentadas;
+4. assinatura dos tensores, metadados e labels validada no LiteRT;
+5. runner Python definido como referência para a paridade do runtime mobile.
+
+O contrato executável e o handoff para a REN-29 estão em
+[`model-contract.md`](model-contract.md). O arquivo de pesos permanece fora do
+Git e é adquirido por script com verificação anterior à publicação local.
 
 YOLOv8n deixa de ser o baseline obrigatório. Ele permanece candidato de
 comparação ou fine-tuning, condicionado à necessidade técnica e a uma decisão
@@ -43,13 +47,13 @@ modelo pré-treinado mais simples atende ao TCC.
 
 ## 3. Classes fechadas
 
-| Classe de domínio | Fala pt-BR | COCO | Baseline | Prioridade | Observação |
-|---|---|---:|---|---|---|
-| `person` | pessoa | 0 | habilitada | crítica | Não identifica nem reconhece a pessoa. |
-| `chair` | cadeira | 56 | habilitada | alta | Bancos e sofás ficam fora. |
-| `table_desk` | mesa | 60 (`dining table`) | habilitada como hipótese | alta | A transferência para carteiras escolares precisa ser medida. |
-| `backpack` | mochila | 24 | habilitada | média | Bolsas, malas e estojos ficam fora. |
-| `door` | porta | inexistente | desabilitada | alta | Exige dataset e novo modelo; a taxonomia já está definida. |
+| Classe de domínio | Fala pt-BR | Índice do modelo | Categoria COCO | Baseline | Prioridade | Observação |
+|---|---|---:|---:|---|---|---|
+| `person` | pessoa | 0 | 1 | habilitada | crítica | Não identifica nem reconhece a pessoa. |
+| `chair` | cadeira | 61 | 62 | habilitada | alta | Bancos e sofás ficam fora. |
+| `table_desk` | mesa | 66 | 67 (`dining table`) | habilitada como hipótese | alta | A transferência para carteiras escolares precisa ser medida. |
+| `backpack` | mochila | 26 | 27 | habilitada | média | Bolsas, malas e estojos ficam fora. |
+| `door` | porta | inexistente | inexistente | desabilitada | alta | Exige dataset e novo modelo; a taxonomia já está definida. |
 
 A versão simples anuncia somente as quatro classes habilitadas. `door` não pode
 ser simulada por outra classe nem incluída por regra heurística. Se a equipe
@@ -181,19 +185,19 @@ são aceitos como desempenho do MVP.
 ## 9. Aprovação e prontidão de execução
 
 Em 19 de agosto de 2026, Renato Cesar aprovou classes, gates, política de dados
-e o POCO X5 Pro 5G como aparelho de referência. O protocolo está `approved` e
+e o POCO X5 Pro 5G como aparelho de referência. Em 20 de agosto, a REN-36 fixou
+e validou o artefato executável. O protocolo está `approved` e
 `python -m eyes_project_ai.protocol` deve continuar passando.
 
-A aprovação congela as decisões experimentais, mas não autoriza antecipar um
-benchmark. A execução permanece `blocked` até que a REN-36:
+A aprovação e a validação do modelo não autorizam antecipar um benchmark. A
+execução permanece `blocked` até que o ensaio no aparelho capture Android, RAM,
+hash do build fingerprint, versão do app, commit, bateria e estado térmico da
+unidade física. Depois desse inventário, um PR específico remove o último
+bloqueio de `execution_readiness` e altera seu status para `ready`.
 
-- registre o SHA-256 e aprove a licença do artefato exato;
-- capture Android, RAM, hash do build fingerprint, versão do app, commit,
-  bateria e estado térmico da unidade física;
-- remova os bloqueios de `execution_readiness` e altere seu status para `ready`.
-
-Essa separação evita dependência circular: REN-33 aprova o protocolo que a
-REN-36 usará para adquirir e verificar o artefato executável.
+Essa separação evita misturar evidência de host com o benchmark do POCO: a
+REN-36 prova integridade e executabilidade, enquanto a REN-29 integra e mede no
+aparelho de referência.
 
 ## 10. Fontes primárias
 
