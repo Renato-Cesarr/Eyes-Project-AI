@@ -37,5 +37,11 @@ jobs:
       - name: Lint
         run: uv run ruff check .
 
+      - name: Acquire verified EfficientDet-Lite0
+        run: uv run python -m eyes_project_ai.acquire_model
+
+      - name: Inspect executable model contract
+        run: uv run python -m eyes_project_ai.inspect_model
+
       - name: Test
         run: uv run pytest

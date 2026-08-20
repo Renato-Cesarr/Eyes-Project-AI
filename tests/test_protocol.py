@@ -28,16 +28,20 @@ def test_versioned_protocol_is_valid(protocol: dict) -> None:
 
 def test_baseline_enables_only_supported_coco_classes(protocol: dict) -> None:
     enabled = {
-        item["id"]: item["baseline"]["coco_id"]
+        item["id"]: (
+            item["baseline"]["coco_contiguous_index"],
+            item["baseline"]["coco_category_id"],
+            item["baseline"]["model_label_index"],
+        )
         for item in protocol["classes"]
         if item["baseline"]["enabled"]
     }
 
     assert enabled == {
-        "person": 0,
-        "chair": 56,
-        "table_desk": 60,
-        "backpack": 24,
+        "person": (0, 1, 0),
+        "chair": (56, 62, 61),
+        "table_desk": (60, 67, 66),
+        "backpack": (24, 27, 26),
     }
 
 
@@ -100,6 +104,7 @@ def test_blocked_execution_requires_blocking_items(protocol: dict) -> None:
 def test_ready_execution_requires_verified_artifact(protocol: dict) -> None:
     invalid = deepcopy(protocol)
     invalid["execution_readiness"] = {"status": "ready", "blocking_items": []}
+    invalid["baseline"]["artifact"]["sha256"] = None
 
     with pytest.raises(ProtocolValidationError, match="SHA-256"):
         validate_protocol(invalid)
@@ -111,7 +116,6 @@ def test_ready_execution_accepts_verified_artifact_and_runtime_inventory(
     ready = deepcopy(protocol)
     ready["execution_readiness"] = {"status": "ready", "blocking_items": []}
     ready["baseline"]["artifact"]["sha256"] = "a" * 64
-    ready["baseline"]["artifact"]["license_review_status"] = "approved"
     ready["reference_device"]["runtime_inventory"] = {
         "status": "captured",
         "android_version": "captured-on-device",

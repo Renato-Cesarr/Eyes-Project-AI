@@ -3,7 +3,7 @@
   "protocol_id": "eyes-mvp-object-detection-v1",
   "status": "approved",
   "language": "pt-BR",
-  "last_reviewed_at": "2026-08-19",
+  "last_reviewed_at": "2026-08-20",
   "research_question": "Um detector leve, pré-treinado e executado localmente consegue produzir alertas preliminares úteis para objetos frequentes de sala de aula em um aparelho Android de referência?",
   "baseline": {
     "family": "EfficientDet-Lite0",
@@ -18,9 +18,12 @@
     },
     "artifact": {
       "filename": "efficientdet-lite0.tflite",
-      "source_url": "https://www.tensorflow.org/lite/android/tutorials/object_detection",
-      "sha256": null,
-      "license_review_status": "required_before_distribution",
+      "source_url": "https://storage.googleapis.com/download.tensorflow.org/models/tflite/task_library/object_detection/rpi/lite-model_efficientdet_lite0_detection_metadata_1.tflite",
+      "sha256": "2e04c53bfeac0ac2a30c057c7e2a777594ce39baaac35a92f74fb1e8c4fc4e0b",
+      "size_bytes": 4563519,
+      "manifest": "config/model-manifest.v1.json",
+      "license": "Apache-2.0",
+      "license_review_status": "approved",
       "acquisition_issue": "REN-36"
     },
     "threshold_selection": {
@@ -37,7 +40,9 @@
       "baseline": {
         "enabled": true,
         "source_label": "person",
-        "coco_id": 0
+        "coco_contiguous_index": 0,
+        "coco_category_id": 1,
+        "model_label_index": 0
       },
       "annotation_rule": "Uma caixa por pessoa real visível; fotos, telas, reflexos e manequins são excluídos."
     },
@@ -48,7 +53,9 @@
       "baseline": {
         "enabled": true,
         "source_label": "chair",
-        "coco_id": 56
+        "coco_contiguous_index": 56,
+        "coco_category_id": 62,
+        "model_label_index": 61
       },
       "annotation_rule": "Uma caixa por assento individual; bancos, sofás e cadeiras apenas impressas são excluídos."
     },
@@ -59,7 +66,9 @@
       "baseline": {
         "enabled": true,
         "source_label": "dining table",
-        "coco_id": 60
+        "coco_contiguous_index": 60,
+        "coco_category_id": 67,
+        "model_label_index": 66
       },
       "annotation_rule": "Uma caixa por mesa ou carteira com superfície de apoio; o mapeamento COCO é uma hipótese de transferência de domínio e deve ser medido separadamente."
     },
@@ -70,7 +79,9 @@
       "baseline": {
         "enabled": true,
         "source_label": "backpack",
-        "coco_id": 24
+        "coco_contiguous_index": 24,
+        "coco_category_id": 27,
+        "model_label_index": 26
       },
       "annotation_rule": "Uma caixa por mochila; bolsas, estojos, malas e objetos impressos são excluídos."
     },
@@ -81,7 +92,9 @@
       "baseline": {
         "enabled": false,
         "source_label": null,
-        "coco_id": null
+        "coco_contiguous_index": null,
+        "coco_category_id": null,
+        "model_label_index": null
       },
       "annotation_rule": "A caixa cobre a folha física da porta; vãos sem folha visível e desenhos são excluídos.",
       "deferred_reason": "COCO não possui a classe door; habilitar exige dataset próprio, avaliação e novo artefato versionado."
@@ -230,7 +243,6 @@
   "execution_readiness": {
     "status": "blocked",
     "blocking_items": [
-      "Registrar SHA-256 e concluir revisão de licença do artefato em REN-36.",
       "Capturar Android, RAM, hash do build fingerprint, versão do app, commit, bateria e estado térmico do aparelho físico antes do benchmark."
     ]
   },
@@ -245,7 +257,17 @@
     {
       "title": "TensorFlow Lite object detection on Android",
       "url": "https://www.tensorflow.org/lite/android/tutorials/object_detection",
-      "accessed_at": "2026-08-19"
+      "accessed_at": "2026-08-20"
+    },
+    {
+      "title": "TensorFlow EfficientDet Lite0 model card",
+      "url": "https://www.kaggle.com/models/tensorflow/efficientdet/tfLite/lite0-detection-default",
+      "accessed_at": "2026-08-20"
+    },
+    {
+      "title": "TensorFlow Examples official EfficientDet-Lite0 acquisition script",
+      "url": "https://github.com/tensorflow/examples/blob/master/lite/examples/object_detection/raspberry_pi/setup.sh",
+      "accessed_at": "2026-08-20"
     },
     {
       "title": "COCO Detection Dataset class map",

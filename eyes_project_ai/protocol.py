@@ -81,7 +81,8 @@ def _validate_classes(protocol: Mapping[str, Any]) -> None:
         unexpected = sorted(actual_ids - EXPECTED_CLASS_IDS)
         _fail("$.classes", f"class taxonomy mismatch; missing={missing}, unexpected={unexpected}")
 
-    enabled_coco_ids: set[int] = set()
+    enabled_coco_indices: set[int] = set()
+    enabled_model_indices: set[int] = set()
     for class_id, definition in parsed.items():
         path = f"$.classes[{class_id}]"
         _non_empty_string(
@@ -92,16 +93,43 @@ def _validate_classes(protocol: Mapping[str, Any]) -> None:
         if not isinstance(enabled, bool):
             _fail(f"{path}.baseline.enabled", "must be boolean")
 
-        coco_id = baseline.get("coco_id")
+        coco_index = baseline.get("coco_contiguous_index")
+        coco_category_id = baseline.get("coco_category_id")
+        model_label_index = baseline.get("model_label_index")
         source_label = baseline.get("source_label")
         if enabled:
-            if not isinstance(coco_id, int) or coco_id < 0:
-                _fail(f"{path}.baseline.coco_id", "enabled classes require a non-negative COCO id")
+            if not isinstance(coco_index, int) or coco_index < 0:
+                _fail(
+                    f"{path}.baseline.coco_contiguous_index",
+                    "enabled classes require a non-negative contiguous COCO index",
+                )
+            if not isinstance(coco_category_id, int) or coco_category_id <= 0:
+                _fail(
+                    f"{path}.baseline.coco_category_id",
+                    "enabled classes require a positive official COCO category id",
+                )
+            if not isinstance(model_label_index, int) or model_label_index < 0:
+                _fail(
+                    f"{path}.baseline.model_label_index",
+                    "enabled classes require a non-negative model label index",
+                )
             _non_empty_string(source_label, f"{path}.baseline.source_label")
-            if coco_id in enabled_coco_ids:
-                _fail(f"{path}.baseline.coco_id", f"duplicate COCO id {coco_id}")
-            enabled_coco_ids.add(coco_id)
-        elif coco_id is not None or source_label is not None:
+            if coco_index in enabled_coco_indices:
+                _fail(
+                    f"{path}.baseline.coco_contiguous_index",
+                    f"duplicate COCO contiguous index {coco_index}",
+                )
+            if model_label_index in enabled_model_indices:
+                _fail(
+                    f"{path}.baseline.model_label_index",
+                    f"duplicate model label index {model_label_index}",
+                )
+            enabled_coco_indices.add(coco_index)
+            enabled_model_indices.add(model_label_index)
+        elif any(
+            value is not None
+            for value in (coco_index, coco_category_id, model_label_index, source_label)
+        ):
             _fail(path, "disabled baseline classes must not claim a COCO mapping")
 
     if parsed["door"]["baseline"]["enabled"]:
@@ -187,6 +215,23 @@ def _validate_status_and_execution_gates(protocol: Mapping[str, Any]) -> None:
     readiness = _mapping(_required(protocol, "execution_readiness", "$"), "$.execution_readiness")
     approval = _mapping(_required(protocol, "approval", "$"), "$.approval")
 
+    artifact_digest = artifact.get("sha256")
+    if not isinstance(artifact_digest, str) or not SHA256_PATTERN.fullmatch(artifact_digest):
+        _fail(
+            "$.baseline.artifact.sha256",
+            "the approved baseline requires a lowercase SHA-256 digest",
+        )
+    artifact_size = artifact.get("size_bytes")
+    if not isinstance(artifact_size, int) or isinstance(artifact_size, bool) or artifact_size <= 0:
+        _fail("$.baseline.artifact.size_bytes", "must be a positive integer")
+    _non_empty_string(artifact.get("manifest"), "$.baseline.artifact.manifest")
+    _non_empty_string(artifact.get("license"), "$.baseline.artifact.license")
+    if artifact.get("license_review_status") != "approved":
+        _fail(
+            "$.baseline.artifact.license_review_status",
+            "must be approved before using the baseline",
+        )
+
     if status == "approved":
         if device.get("selection_status") != "selected":
             _fail("$.reference_device.selection_status", "must be 'selected'")
@@ -220,17 +265,6 @@ def _validate_status_and_execution_gates(protocol: Mapping[str, Any]) -> None:
         )
 
     if readiness_status == "ready":
-        digest = artifact.get("sha256")
-        if not isinstance(digest, str) or not SHA256_PATTERN.fullmatch(digest):
-            _fail(
-                "$.baseline.artifact.sha256",
-                "ready execution requires a lowercase SHA-256 digest",
-            )
-        if artifact.get("license_review_status") != "approved":
-            _fail(
-                "$.baseline.artifact.license_review_status",
-                "must be approved before experiment execution",
-            )
         if runtime.get("status") != "captured":
             _fail("$.reference_device.runtime_inventory.status", "must be 'captured'")
         _non_empty_string(
