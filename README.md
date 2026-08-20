@@ -3,6 +3,32 @@
 Pipeline de visão computacional do Eyes Project para avaliação, adaptação e
 exportação de modelos de detecção de objetos para dispositivos móveis.
 
+## Protocolo do MVP
+
+O escopo científico inicial está aprovado e versionado em:
+
+- [protocolo experimental](docs/experiment-protocol.md);
+- [guia de anotação](docs/annotation-guide.md);
+- [privacidade e governança](docs/privacy-and-data-governance.md);
+- [ADR do baseline pré-treinado](docs/adr/0001-pretrained-efficientdet-lite0-baseline.md);
+- [configuração normativa legível por máquina](config/experiment.v1.json).
+
+A primeira demonstração usa EfficientDet-Lite0 pré-treinado e não exige treino.
+Ela habilita pessoa, cadeira, mesa/carteira como hipótese de mapeamento e mochila.
+Porta permanece definida, mas depende de dataset/modelo customizado.
+
+Valide o protocolo antes de qualquer experimento:
+
+```powershell
+py -3.11 -m uv run python -m eyes_project_ai.protocol
+```
+
+O protocolo usa o POCO X5 Pro 5G como aparelho físico de referência. Sua
+execução permanece `blocked` até a REN-36 verificar SHA-256 e licença do
+artefato e capturar o inventário real da unidade (Android, RAM, build, versão do
+app, commit, bateria e estado térmico). Métricas observadas nunca devem ser
+gravadas como se fossem configuração pré-experimental.
+
 ## Toolchain fixado
 
 - Python `3.11`, declarado em `.python-version` e `pyproject.toml`;

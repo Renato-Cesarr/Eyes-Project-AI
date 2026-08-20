@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "protocol_id": "eyes-mvp-object-detection-v1",
+  "status": "approved",
+  "language": "pt-BR",
+  "last_reviewed_at": "2026-08-19",
+  "research_question": "Um detector leve, pré-treinado e executado localmente consegue produzir alertas preliminares úteis para objetos frequentes de sala de aula em um aparelho Android de referência?",
+  "baseline": {
+    "family": "EfficientDet-Lite0",
+    "runtime": "TensorFlow Lite",
+    "pretrained_dataset": "COCO 2017",
+    "training_required_for_initial_demo": false,
+    "input": {
+      "width": 320,
+      "height": 320,
+      "channels": 3,
+      "color_space": "RGB"
+    },
+    "artifact": {
+      "filename": "efficientdet-lite0.tflite",
+      "source_url": "https://www.tensorflow.org/lite/android/tutorials/object_detection",
+      "sha256": null,
+      "license_review_status": "required_before_distribution",
+      "acquisition_issue": "REN-36"
+    },
+    "threshold_selection": {
+      "score_initial_candidate": 0.4,
+      "nms_iou_initial_candidate": 0.5,
+      "rule": "Escolher somente no conjunto de validação; o conjunto de teste permanece bloqueado até a configuração final."
+    }
+  },
+  "classes": [
+    {
+      "id": "person",
+      "display_name_pt_br": "pessoa",
+      "priority": "critical",
+      "baseline": {
+        "enabled": true,
+        "source_label": "person",
+        "coco_id": 0
+      },
+      "annotation_rule": "Uma caixa por pessoa real visível; fotos, telas, reflexos e manequins são excluídos."
+    },
+    {
+      "id": "chair",
+      "display_name_pt_br": "cadeira",
+      "priority": "high",
+      "baseline": {
+        "enabled": true,
+        "source_label": "chair",
+        "coco_id": 56
+      },
+      "annotation_rule": "Uma caixa por assento individual; bancos, sofás e cadeiras apenas impressas são excluídos."
+    },
+    {
+      "id": "table_desk",
+      "display_name_pt_br": "mesa",
+      "priority": "high",
+      "baseline": {
+        "enabled": true,
+        "source_label": "dining table",
+        "coco_id": 60
+      },
+      "annotation_rule": "Uma caixa por mesa ou carteira com superfície de apoio; o mapeamento COCO é uma hipótese de transferência de domínio e deve ser medido separadamente."
+    },
+    {
+      "id": "backpack",
+      "display_name_pt_br": "mochila",
+      "priority": "medium",
+      "baseline": {
+        "enabled": true,
+        "source_label": "backpack",
+        "coco_id": 24
+      },
+      "annotation_rule": "Uma caixa por mochila; bolsas, estojos, malas e objetos impressos são excluídos."
+    },
+    {
+      "id": "door",
+      "display_name_pt_br": "porta",
+      "priority": "high",
+      "baseline": {
+        "enabled": false,
+        "source_label": null,
+        "coco_id": null
+      },
+      "annotation_rule": "A caixa cobre a folha física da porta; vãos sem folha visível e desenhos são excluídos.",
+      "deferred_reason": "COCO não possui a classe door; habilitar exige dataset próprio, avaliação e novo artefato versionado."
+    }
+  ],
+  "dataset": {
+    "initial_scope": "avaliação local; sem treinamento na primeira demonstração",
+    "minimum_capture_sessions": 30,
+    "minimum_test_instances_per_enabled_class": 30,
+    "split": {
+      "assignment_unit": "capture_session",
+      "group_key": "room_id + capture_session_id",
+      "percentages": {
+        "train": 70,
+        "validation": 15,
+        "test": 15
+      },
+      "seed": 33033,
+      "leakage_rule": "Frames, rajadas ou imagens da mesma sala e sessão nunca atravessam conjuntos."
+    },
+    "scenarios": {
+      "illumination": ["adequate_at_or_above_300_lux", "low_below_100_lux", "mixed_or_backlit"],
+      "occlusion": ["none_below_20_percent", "partial_20_to_50_percent", "heavy_above_50_percent"],
+      "camera_motion": ["stationary", "slow_walking"],
+      "relative_range": ["near", "medium", "far"],
+      "density": ["single_object", "multiple_objects_same_class", "cluttered_scene"]
+    }
+  },
+  "reference_device": {
+    "selection_status": "selected",
+    "manufacturer": "Xiaomi",
+    "brand": "POCO",
+    "model": "POCO X5 Pro 5G",
+    "chipset": "Qualcomm Snapdragon 778G",
+    "supported_ram_variants_gb": [6, 8],
+    "official_specs_url": "https://www.mi.com/br/product/poco-x5-pro-5g/",
+    "cpu_abi": "arm64-v8a",
+    "camera": "rear",
+    "camera_resolution": "medium",
+    "camera_target_fps": 12,
+    "inference_threads_initial_candidate": 4,
+    "runtime_inventory": {
+      "status": "capture_before_benchmark",
+      "android_version": null,
+      "ram_gb": null,
+      "build_fingerprint_sha256": null,
+      "app_version": null,
+      "git_commit": null,
+      "battery_percent_start": null,
+      "thermal_state_start": null,
+      "captured_at": null
+    },
+    "notes": "O modelo do aparelho está selecionado. Android instalado, RAM da unidade, build, bateria e estado térmico devem ser capturados no aparelho físico antes do benchmark; emulador serve apenas para testes funcionais."
+  },
+  "metrics": [
+    {
+      "id": "precision",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Por classe e macro, com IoU >= 0.50 e threshold escolhido somente na validação.",
+      "initial_demo_gate": 0.6
+    },
+    {
+      "id": "recall",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Por classe e macro, com IoU >= 0.50; reportar intervalos e contagens.",
+      "initial_demo_gate": 0.6
+    },
+    {
+      "id": "map_50",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "mAP por classe e macro no conjunto de teste bloqueado.",
+      "initial_demo_gate": 0.5
+    },
+    {
+      "id": "map_50_95",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "mAP COCO de IoU 0.50 a 0.95, por classe e macro.",
+      "initial_demo_gate": null
+    },
+    {
+      "id": "inference_latency_p50_ms",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Tempo monotônico do tensor de entrada até os outputs, após aquecimento.",
+      "initial_demo_gate": null
+    },
+    {
+      "id": "inference_latency_p95_ms",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Percentil 95 após 30 inferências de aquecimento e ao menos 300 amostras.",
+      "initial_demo_gate": 250
+    },
+    {
+      "id": "end_to_end_latency_p50_ms",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Frame recebido até evento de alerta enfileirado, usando relógio monotônico.",
+      "initial_demo_gate": null
+    },
+    {
+      "id": "end_to_end_latency_p95_ms",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Percentil 95 do frame até o alerta enfileirado; TTS é medido também separadamente.",
+      "initial_demo_gate": 500
+    },
+    {
+      "id": "false_alerts_per_minute",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Alertas sem objeto correspondente divididos pelos minutos observados, por cenário.",
+      "initial_demo_gate": 1.0
+    },
+    {
+      "id": "missed_alert_rate",
+      "status": "hypothesis",
+      "measured_value": null,
+      "measurement": "Eventos relevantes sem alerta divididos pelos eventos relevantes anotados, por classe e faixa.",
+      "initial_demo_gate": 0.4
+    }
+  ],
+  "decision_rules": {
+    "initial_demo": "Todos os gates numéricos aplicáveis precisam passar no aparelho de referência; isso autoriza somente demonstração técnica, não uso como auxílio de segurança validado.",
+    "fine_tuning_trigger": "Abrir dataset e fine-tuning se qualquer classe habilitada falhar precision/recall, se table_desk apresentar transferência insuficiente ou se door for aprovada para o MVP.",
+    "test_lock": "Após escolher threshold, classes e configuração na validação, o teste é executado uma única vez por versão do modelo."
+  },
+  "privacy": {
+    "processing_location": "on_device",
+    "persist_images_in_app": false,
+    "upload_images_from_app": false,
+    "facial_recognition": false,
+    "identity_inference": false,
+    "include_minors_in_initial_dataset": false,
+    "explicit_consent_required_for_recorded_collection": true,
+    "adult_volunteers_only_for_person_class": true,
+    "pseudonymous_session_ids": true,
+    "delete_raw_data_after_days": 30,
+    "derived_annotations_retention": "Somente após revisão de licença, consentimento e ausência de identificadores diretos.",
+    "future_minors_gate": "Exige avaliação ética/institucional, melhor interesse, base legal documentada e consentimento do responsável quando aplicável."
+  },
+  "execution_readiness": {
+    "status": "blocked",
+    "blocking_items": [
+      "Registrar SHA-256 e concluir revisão de licença do artefato em REN-36.",
+      "Capturar Android, RAM, hash do build fingerprint, versão do app, commit, bateria e estado térmico do aparelho físico antes do benchmark."
+    ]
+  },
+  "approval": {
+    "team_approved": true,
+    "approved_by": "Renato Cesar",
+    "approved_at": "2026-08-19",
+    "evidence": "A equipe definiu o POCO X5 Pro 5G como aparelho de referência e autorizou a continuidade do desenvolvimento.",
+    "open_items": []
+  },
+  "sources": [
+    {
+      "title": "TensorFlow Lite object detection on Android",
+      "url": "https://www.tensorflow.org/lite/android/tutorials/object_detection",
+      "accessed_at": "2026-08-19"
+    },
+    {
+      "title": "COCO Detection Dataset class map",
+      "url": "https://docs.ultralytics.com/datasets/detect/coco/",
+      "accessed_at": "2026-08-19"
+    },
+    {
+      "title": "Lei Geral de Proteção de Dados Pessoais, Lei 13.709/2018",
+      "url": "https://www.gov.br/mme/pt-br/arquivos/legislacao-consolidada-lgpd.pdf",
+      "accessed_at": "2026-08-19"
+    },
+    {
+      "title": "POCO X5 Pro 5G — página oficial do produto",
+      "url": "https://www.mi.com/br/product/poco-x5-pro-5g/",
+      "accessed_at": "2026-08-19"
+    }
+  ]
+}
