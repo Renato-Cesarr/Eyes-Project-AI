@@ -1,0 +1,136 @@
+{
+  "classification": "historical_physical_pilot; not final evaluation",
+  "physicalCollectionDate": "2026-09-16",
+  "reanalyzedAt": "2026-10-05T04:06:50.671051Z",
+  "sourceFiles": [
+    {
+      "file": "ren37-smoke-20260916-09.jsonl",
+      "sha256": "f8562659474a4ee0073b2217338fbac1a445ecb968b6f9fbe485e5b27b5d3deb",
+      "bytes": 403199
+    }
+  ],
+  "analysisSoftware": {
+    "sourceCommit": "dc5d0ede69029fc7ce6755237c1a17291542c8ab",
+    "sourceDirty": false,
+    "hashEncoding": "UTF-8 LF",
+    "sourceSha256": {
+      "tool/calibration_report.dart": "f081fbc81291eeb753c0163c3876492d2a4f5fabbcdac3bf66d3e4cbcd4b5992",
+      "lib/features/calibration/domain/calibration_analysis.dart": "64c3e447e03caf54ce7d0f6326b9270a9dbe74a6e9bd20cd958af38720f8ff75",
+      "lib/features/calibration/domain/calibration_report_dataset.dart": "5dbc8ddd238bbf681ace130212e060f9d319e7d063e9bf6915970768449abe94"
+    }
+  },
+  "protocolSha256": "3e4fb35976c9d55d80ff99abbed2acba44572d87033539c48150103001e5865e",
+  "provenance": {
+    "purpose": "pilot",
+    "split": "calibration",
+    "legacy": true,
+    "measurementWindowVerified": false,
+    "claim": "descriptive_only"
+  },
+  "analysis": {
+    "frameCount": 550,
+    "alertCount": 5,
+    "matchedSpeechCount": 4,
+    "confusionMatrix": {
+      "veryNear": {
+        "missed": 467,
+        "distant": 35,
+        "attention": 24,
+        "veryNear": 24
+      }
+    },
+    "latencyMs": {
+      "cameraToDecisionP50": 61.0365,
+      "cameraToDecisionP95": 92.50409999999995,
+      "preprocessingP50": 18.7815,
+      "inferenceP50": 37.3755,
+      "visionTotalP50": 60.118,
+      "cameraToSpeechStartP50": 278.425,
+      "cameraToSpeechStartP95": 685.6561499999999,
+      "firstAlertP50": 10919.067,
+      "firstAlertP95": 10919.067
+    },
+    "missedHazardRate": 0.9127272727272727,
+    "falseAlertRate": null,
+    "repeatedAlertCount": 0,
+    "sampleCounts": {
+      "hazardFrames": 550,
+      "missedHazardFrames": 502,
+      "distantFrames": 0,
+      "falseAlertFrames": 0
+    },
+    "latencyStatistics": {
+      "preprocessing": {
+        "n": 550,
+        "p50Ms": 18.7815,
+        "p95Ms": 28.667399999999994,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "inference": {
+        "n": 550,
+        "p50Ms": 37.3755,
+        "p95Ms": 70.84899999999996,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "visionTotal": {
+        "n": 550,
+        "p50Ms": 60.118,
+        "p95Ms": 91.04149999999997,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "cameraToDecision": {
+        "n": 550,
+        "p50Ms": 61.0365,
+        "p95Ms": 92.50409999999995,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "cameraToQueue": {
+        "n": 5,
+        "p50Ms": 62.594,
+        "p95Ms": 70.654,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "queueToSpeech": {
+        "n": 4,
+        "p50Ms": 210.459,
+        "p95Ms": 622.2031499999999,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "cameraToSpeechStart": {
+        "n": 4,
+        "p50Ms": 278.425,
+        "p95Ms": 685.6561499999999,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "firstOperationalAlert": {
+        "n": 1,
+        "p50Ms": 10919.067,
+        "p95Ms": 10919.067,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      },
+      "sessionToFirstAlert": {
+        "n": 1,
+        "p50Ms": 52204.632,
+        "p95Ms": 52204.632,
+        "unit": "ms",
+        "method": "linear_interpolation"
+      }
+    }
+  },
+  "limits": [
+    "one chair/veryNear/bright/none scenario",
+    "only four paired speech starts",
+    "legacy measurement window and build identity not verified",
+    "UTC differences do not prove monotonic end-to-end clocks",
+    "battery was charging; consumption not validated",
+    "no new physical collection; original files preserved"
+  ]
+}

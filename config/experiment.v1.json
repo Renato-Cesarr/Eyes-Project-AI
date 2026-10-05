@@ -3,7 +3,7 @@
   "protocol_id": "eyes-mvp-object-detection-v1",
   "status": "approved",
   "language": "pt-BR",
-  "last_reviewed_at": "2026-08-20",
+  "last_reviewed_at": "2026-10-05",
   "research_question": "Um detector leve, pré-treinado e executado localmente consegue produzir alertas preliminares úteis para objetos frequentes de sala de aula em um aparelho Android de referência?",
   "baseline": {
     "family": "EfficientDet-Lite0",
@@ -116,11 +116,30 @@
       "leakage_rule": "Frames, rajadas ou imagens da mesma sala e sessão nunca atravessam conjuntos."
     },
     "scenarios": {
-      "illumination": ["adequate_at_or_above_300_lux", "low_below_100_lux", "mixed_or_backlit"],
-      "occlusion": ["none_below_20_percent", "partial_20_to_50_percent", "heavy_above_50_percent"],
-      "camera_motion": ["stationary", "slow_walking"],
-      "relative_range": ["near", "medium", "far"],
-      "density": ["single_object", "multiple_objects_same_class", "cluttered_scene"]
+      "illumination": [
+        "adequate_at_or_above_300_lux",
+        "low_below_100_lux",
+        "mixed_or_backlit"
+      ],
+      "occlusion": [
+        "none_below_20_percent",
+        "partial_20_to_50_percent",
+        "heavy_above_50_percent"
+      ],
+      "camera_motion": [
+        "stationary",
+        "slow_walking"
+      ],
+      "relative_range": [
+        "near",
+        "medium",
+        "far"
+      ],
+      "density": [
+        "single_object",
+        "multiple_objects_same_class",
+        "cluttered_scene"
+      ]
     }
   },
   "reference_device": {
@@ -129,7 +148,10 @@
     "brand": "POCO",
     "model": "POCO X5 Pro 5G",
     "chipset": "Qualcomm Snapdragon 778G",
-    "supported_ram_variants_gb": [6, 8],
+    "supported_ram_variants_gb": [
+      6,
+      8
+    ],
     "official_specs_url": "https://www.mi.com/br/product/poco-x5-pro-5g/",
     "cpu_abi": "arm64-v8a",
     "camera": "rear",
@@ -211,7 +233,7 @@
       "status": "hypothesis",
       "measured_value": null,
       "measurement": "Alertas sem objeto correspondente divididos pelos minutos observados, por cenário.",
-      "initial_demo_gate": 1.0
+      "initial_demo_gate": 1
     },
     {
       "id": "missed_alert_rate",
@@ -284,5 +306,9 @@
       "url": "https://www.mi.com/br/product/poco-x5-pro-5g/",
       "accessed_at": "2026-08-19"
     }
-  ]
+  ],
+  "evaluation_protocol": {
+    "path": "assistive-evaluation.v1.json",
+    "sha256_lf": "3e4fb35976c9d55d80ff99abbed2acba44572d87033539c48150103001e5865e"
+  }
 }

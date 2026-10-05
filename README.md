@@ -8,6 +8,7 @@ exportação de modelos de detecção de objetos para dispositivos móveis.
 O escopo científico inicial está aprovado e versionado em:
 
 - [protocolo experimental](docs/experiment-protocol.md);
+- [protocolo unificado assistivo](docs/assistive-evaluation-protocol.md) e [inventário de runtime](docs/runtime-inventory-2026-10-05.md);
 - [guia de anotação](docs/annotation-guide.md);
 - [privacidade e governança](docs/privacy-and-data-governance.md);
 - [ADR do baseline pré-treinado](docs/adr/0001-pretrained-efficientdet-lite0-baseline.md);

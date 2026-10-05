@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "protocol_id": "eyes-assistive-evaluation-v1",
+  "revision": "2026-10-05",
+  "status": "pre_experiment",
+  "authority": "Eyes-Project-AI/config/assistive-evaluation.v1.json; Mobile carries a byte-equivalent LF-normalized copy.",
+  "classes": {
+    "person": "person",
+    "chair": "chair",
+    "table_desk": "table",
+    "backpack": "backpack"
+  },
+  "proximity": {
+    "bands": [
+      "distant",
+      "attention",
+      "veryNear"
+    ],
+    "reference_metres": {
+      "veryNear": 0.5,
+      "attention": 1,
+      "distant": 2
+    },
+    "reference_scope": "controlled_experiment_only; never product distance estimates"
+  },
+  "latency": {
+    "unit": "ms",
+    "percentile_method": "linear_interpolation_rank_(n-1)*p/100",
+    "minimum_samples_per_configuration": 300,
+    "warmup_frames": 30,
+    "warmup_seconds": 5,
+    "stage_clock": "monotonic Stopwatch",
+    "timestamp_delta_clock": "UTC DateTime; current telemetry is diagnostic until monotonic end-to-end instrumentation is verified",
+    "landmarks": {
+      "inference": "inference execution only",
+      "camera_to_decision": "captured_at -> observed_at",
+      "camera_to_queue": "alert.source_at -> alert.emitted_at",
+      "queue_to_tts": "correlated alert.emitted_at -> speech.started_at",
+      "camera_to_tts": "correlated alert.source_at -> speech.started_at",
+      "first_alert": "first measured frame.captured_at -> first alert.emitted_at for that session/window"
+    },
+    "gates_ms": {
+      "inference_p95": 250,
+      "camera_to_queue_p95": 500,
+      "camera_to_tts_p95": 300
+    },
+    "measured_values": null,
+    "minimum_samples_scope": "inference_only",
+    "tts_sample_plan": {
+      "target_pairs_per_configuration": 100,
+      "status": "proposed_engineering_target",
+      "rationale": "100 pairs give approximately five observations in the upper 5% tail; this is a sampling plan, not a safety confidence bound. Require independent sessions and freeze before final collection."
+    }
+  },
+  "detection": {
+    "minimum_independent_sessions": 30,
+    "minimum_test_instances_per_class": 30,
+    "split": {
+      "train": 70,
+      "validation": 15,
+      "test": 15,
+      "seed": 33033,
+      "group_key": "room_id + capture_session_id"
+    },
+    "gates": {
+      "precision": 0.6,
+      "recall": 0.6,
+      "map_50": 0.5,
+      "false_alerts_per_minute": 1,
+      "missed_annotated_event_rate": 0.4
+    },
+    "measured_values": null
+  },
+  "assistive_segments": {
+    "calibration": 48,
+    "evaluation": 24,
+    "negative_minimum": 6,
+    "measurement_seconds": 20,
+    "calibration_split": "calibration",
+    "evaluation_split": "evaluation",
+    "negative_expected_band": "distant",
+    "lighting": [
+      "bright",
+      "dim",
+      "backlit"
+    ],
+    "occlusion": [
+      "none",
+      "partial"
+    ],
+    "design": "calibration: 4 classes x 3 bands x 2 lighting x 2 occlusion; evaluation: 24 independent balanced setups; backlit is additional coverage; annotated detection corpus remains separate"
+  },
+  "sustained": {
+    "duration_minutes": 20,
+    "replaces_mobile_minutes": 15,
+    "battery_consumption_requires_unplugged": true,
+    "required": [
+      "battery_start_end",
+      "charging_state_start_end",
+      "temperature",
+      "thermal_status",
+      "pss_rss",
+      "anr_fatal"
+    ],
+    "measured_values": null
+  },
+  "denominators": {
+    "missed_hazard_frame_rate": "(expected danger frames predicted distant or missed) / all expected danger frames",
+    "false_alert_frame_rate": "distant frames with queued alert / distant frames; diagnostic, not false alerts per minute",
+    "missed_annotated_event_rate": "relevant annotated events without alert / relevant annotated events",
+    "false_alerts_per_minute": "false annotated alert events / measured minutes",
+    "latency_n": "valid paired observations for each metric; never total frames as TTS n"
+  },
+  "report_purposes": [
+    "fixture",
+    "pilot",
+    "calibration",
+    "evaluation",
+    "negative",
+    "stability"
+  ],
+  "report_requirements": {
+    "physical_manifest_required": true,
+    "legacy_single_file_purposes": [
+      "fixture",
+      "pilot"
+    ],
+    "freeze": [
+      "sourceCommit",
+      "apkSha256",
+      "modelSha256",
+      "policySha256",
+      "runtimeConfiguration"
+    ],
+    "window": "explicit operational start and measurement start/end; >=5s and >=30 frames of warmup; no automatic reinterpretation of legacy timestamps",
+    "correlation": "session_id + correlation_id; exactly one queued alert and at most one matched speech start",
+    "output_claim": "descriptive_only; no automatic final acceptance"
+  },
+  "readiness": {
+    "status": "blocked",
+    "remaining": [
+      "fresh runtime inventory for measured build",
+      "independent capture matrix and frozen configuration",
+      "verified end-to-end clocks",
+      "physical collection and annotation"
+    ],
+    "current_results": null
+  }
+}

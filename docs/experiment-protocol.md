@@ -7,6 +7,10 @@
 - **Última revisão:** 19 de agosto de 2026
 - **Configuração normativa:** [`config/experiment.v1.json`](../config/experiment.v1.json)
 
+## Contrato unificado REN-68
+
+Consultar [protocolo assistivo unificado](assistive-evaluation-protocol.md) e [inventário com proveniência](runtime-inventory-2026-10-05.md). O contrato compartilhado fixa marcos, denominadores, conjuntos e janela sustentada de 20 min; o mobile mantém cópia com digest conferido. Resultados continuam separados e a coleta final permanece pendente.
+
 ## 1. Objetivo e limite da evidência
 
 Este protocolo verifica se um detector leve, pré-treinado e executado no
@@ -148,7 +152,7 @@ confusão. Threshold é registrado junto do resultado.
 - memória, temperatura e bateria em ensaio sustentado de 20 minutos;
 - falha, ANR ou crescimento contínuo de fila/memória.
 
-As durações usam relógio monotônico. A medição de inferência descarta 30
+Durações internas usam relógio monotônico/Stopwatch. Deltas atuais de frame/fila/TTS usam UTC e exigem verificação de relógios antes do gate final; não equivalem a uma prova monotônica ponta a ponta. A medição de inferência descarta 30
 execuções de aquecimento e usa ao menos 300 amostras válidas por configuração.
 
 ## 7. Aparelho de referência
