@@ -336,6 +336,19 @@ def load_and_validate_protocol(path: str | Path) -> dict[str, Any]:
         data = json.load(source)
     protocol = dict(_mapping(data, "$"))
     validate_protocol(protocol)
+    from eyes_project_ai.evaluation_protocol import (
+        EvaluationProtocolError,
+        load_evaluation_protocol,
+    )
+
+    reference = _mapping(protocol.get("evaluation_protocol"), "$.evaluation_protocol")
+    filename = reference.get("path")
+    if filename != "assistive-evaluation.v1.json":
+        _fail("$.evaluation_protocol.path", "must reference the shared evaluation contract")
+    try:
+        load_evaluation_protocol(protocol_path.parent / filename, reference.get("sha256_lf"))
+    except EvaluationProtocolError as error:
+        raise ProtocolValidationError(str(error)) from error
     return protocol
 
 
