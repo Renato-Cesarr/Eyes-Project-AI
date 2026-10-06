@@ -63,7 +63,7 @@ Treinamento e exportação customizada são condicionais aos resultados do
 baseline. Python é tooling e referência; a inferência crítica do app permanece
 on-device e offline.
 
-## Configuração no Windows
+## Configuração local no Windows
 
 ```powershell
 py -3.11 -m pip install --user uv==0.12.5
