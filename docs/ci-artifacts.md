@@ -8,13 +8,14 @@ host de build. Não treina modelo e não usa dados pessoais ou corpus físico.
 Em checkout limpo, Python 3.11/uv 0.12.5:
 
 ```powershell
-uv sync --locked --all-groups
-uv run ruff check .
-uv run python -m eyes_project_ai.acquire_model
-uv run pytest --junitxml=artifacts/ci/tests.xml
-uv run python -m eyes_project_ai.ci_report
+uv sync --locked --no-build --all-groups
+uv run --locked --no-build ruff check .
+uv run --locked --no-build python -m eyes_project_ai.acquire_model
+uv run --locked --no-build pytest --junitxml=artifacts/ci/tests.xml
+uv run --locked --no-build python -m eyes_project_ai.ci_report
 ```
 
+A CI exige lock também em cada uv run e impede execução de builds de dependências.
 A CLI valida hash/labels/tensores, executa smoke real com LiteRT 2.2.0, depois
 3 warmups e 20 invocações com tensor RGB preto 320×320, quatro threads. Guarda
 amostras, p50/p95 de inferência e ambiente. O relatório recusa checkout sujo,
